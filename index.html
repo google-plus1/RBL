@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ragdoll Baller League</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,700;1,900&display=swap">
+<style>
+:root{--bg:#111;--pan:#2b2b2d;--fg:#fff;--mut:#8d8d92;--y:#f4ff1c;--line:#2e2e30;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:500 14px/1.45 Archivo,Arial,sans-serif}
+a{color:inherit;text-decoration:none}
+.h{font-weight:900;font-style:italic;text-transform:uppercase}
+:focus-visible{outline:2px solid var(--y);outline-offset:2px}
+.top{height:6px;background:linear-gradient(90deg,var(--y),#fff,var(--y));background-size:200% 100%;animation:slide 6s linear infinite}
+header{background:#0c0c0c;border-bottom:1px solid #3a3d10}
+.w{max-width:1060px;margin:0 auto;padding:0 18px}
+header .w{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+.logo{font-size:22px;letter-spacing:-.02em;margin-right:6px}
+nav{display:flex;gap:18px;flex:1;font-weight:700;font-size:12px;text-transform:uppercase}
+nav a{color:var(--mut);transition:color .2s}nav a:hover{color:var(--fg)}
+.pill,.btn{font:inherit;font-weight:900;font-style:italic;text-transform:uppercase;font-size:11px;border-radius:20px;padding:8px 14px;border:1px solid #333;background:none;color:var(--mut);cursor:pointer;display:inline-block;transition:transform .2s,background .2s}
+.pill:hover{transform:translateY(-2px);color:var(--fg)}
+.pill.on,.btn{background:var(--y);color:#000;border-color:var(--y)}
+.btn{border-radius:6px;padding:10px 14px}.btn:hover{transform:scale(1.03)}
+.back{margin:18px 0 6px}
+.pg{animation:up .45s both;padding-bottom:50px}
+.in{animation:up .5s both;animation-delay:calc(var(--i,0)*70ms)}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+@keyframes slide{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;padding-top:16px}
+.hero,.card{position:relative;display:block;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,#2a3318,#0e0e0e)}
+.hero{aspect-ratio:16/9}.card{aspect-ratio:4/3}
+.hero img,.card img,.pimg{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.hero:hover img,.card:hover img{transform:scale(1.05)}
+.cap{position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,#000c);font-size:clamp(14px,2.4vw,26px);line-height:1.05}
+.card .cap{font-size:12px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.pan{background:var(--pan);border-radius:6px;padding:14px;margin-bottom:10px}
+.pan h3{color:var(--y);margin:0 0 10px;font-size:13px}
+.up{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-weight:900;font-size:12px;text-transform:uppercase}
+.up b:last-child{text-align:right}.up small{color:var(--mut);font-weight:500}
+.cr{width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;font:900 9px Archivo;font-style:normal;color:#000;vertical-align:middle;margin-right:8px}
+h2.t{margin:12px 0 14px;font-size:clamp(28px,5vw,42px);letter-spacing:-.02em}
+table{width:100%;border-collapse:collapse}
+th{color:var(--mut);font-size:11px;padding:10px 6px}
+td{text-align:center;padding:10px 6px;border-top:1px solid var(--line);font-family:Georgia,serif;font-weight:700}
+td:nth-child(2),th:nth-child(2){text-align:left}
+tbody tr{animation:up .4s both;animation-delay:calc(var(--i)*50ms)}
+.scroll{overflow-x:auto}
+.fx{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;background:var(--pan);border-radius:4px;padding:14px;margin-bottom:8px;font-weight:900;text-transform:uppercase}
+.fx span:first-child{text-align:right}.fx .s{color:var(--y);font-size:16px}
+.mut{color:var(--mut)}
+.art{max-width:720px}.art .pimg{height:auto;border-radius:6px;margin:12px 0}.art p{white-space:pre-wrap;line-height:1.6}
+input,textarea,select{font:inherit;color:var(--fg);background:#3a3a3d;border:0;border-radius:6px;padding:9px;width:100%}
+.r{display:flex;gap:8px;margin-bottom:8px;align-items:center}.r input[type=number]{width:60px}
+.adm h3{color:var(--y);margin:26px 0 10px}
+.msg{color:var(--y);min-height:20px}
+footer{padding:40px 0 30px;color:var(--mut);font-size:12px;text-align:center}
+.cr img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.up2{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);font-weight:700}.up2 b{color:var(--y)}
+table.l td:nth-child(2),table.l th:nth-child(2){text-align:center}table.l td:first-child,table.l th:first-child{text-align:left}
+@media(max-width:760px){.pgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr 1fr}nav{display:none}}
+</style>
+</head>
+<body>
+<div class="top"></div>
+<header><div class="w"><a class="logo h" id="logo" href="#">Ragdoll Baller League</a>
+<nav><a href="#">Home</a><a href="#table">Table</a><a href="#fixtures">Fixtures</a><a href="#players">Players</a><a href="#teamstats">Teams</a><a href="#rules">Rules</a><a href="#apply">Apply</a></nav>
+<a class="pill on" id="lg" href="#admin">Log in</a></div></header>
+<main class="w" id="app"></main>
+<div class="w pg" id="apply" hidden>
+<a class="pill back" href="#">← Back to home</a>
+<h2 class="t h">Become a moderator</h2>
+<div style="overflow-x:auto"><script type="text/javascript" src="https://surveymars.com/js/qembed.js?activity=iJs9C21Jx&source=iframe&width=912"></script></div>
+</div>
+<footer>© <span id="ft">Ragdoll Baller League</span></footer>
+<script type="module">
+const bar=t=>{let b=document.getElementById("err");if(!b){b=document.createElement("div");b.id="err";b.style.cssText="position:fixed;left:0;right:0;bottom:0;background:#b00020;color:#fff;padding:10px 16px;z-index:9;font:13px Arial";document.body.appendChild(b)}b.textContent=t};
+const HINT={"permission-denied":"Firestore rules block this. Publish firestore.rules in the Firebase console.","not-found":"Create the Firestore database in the Firebase console.","unavailable":"Cannot reach Firebase. Check your connection.","auth/invalid-credential":"Wrong email or password, or this user is not in Firebase Authentication.","auth/operation-not-allowed":"Enable Email/Password under Authentication > Sign-in method.","auth/unauthorized-domain":"Add this domain under Authentication > Settings > Authorized domains."};
+const fail=e=>bar((HINT[e&&e.code]||"")+" ["+((e&&(e.code||e.message))||e)+"]");
+addEventListener("error",e=>bar("Error: "+e.message));
+addEventListener("unhandledrejection",e=>fail(e.reason));
+const B="https://www.gstatic.com/firebasejs/10.14.1/";
+let auth,db,LD,doc,setDoc,collection,addDoc,deleteDoc,onSnapshot,query,orderBy,onAuthStateChanged,signInWithEmailAndPassword,signOut;
+try{
+const ld=(b,s)=>Promise.all(["app","auth","firestore"].map(n=>import(b+s[0]+n+s[1])));
+let m;try{m=await ld(B+"firebase-",["",".js"])}catch(e){m=await ld("https://cdn.jsdelivr.net/npm/firebase@10.14.1/",["","/+esm"])}
+const[a,au,fs]=m;
+({doc,setDoc,collection,addDoc,deleteDoc,onSnapshot,query,orderBy}=fs);
+({onAuthStateChanged,signInWithEmailAndPassword,signOut}=au);
+const app=a.initializeApp({apiKey:"AIzaSyApMiia5qz1TnFLcbeWTlIsemRwMLj8oJ4",authDomain:"rbls-d81b5.firebaseapp.com",databaseURL:"https://rbls-d81b5-default-rtdb.europe-west1.firebasedatabase.app",projectId:"rbls-d81b5",storageBucket:"rbls-d81b5.firebasestorage.app",messagingSenderId:"965959812283",appId:"1:965959812283:web:3bb5a8d3fa05d7d118d59e",measurementId:"G-WFTMEB7RHV"});
+auth=au.getAuth(app);db=fs.getFirestore(app);LD=doc(db,"league","main");
+import(B+"firebase-analytics.js").then(m=>m.getAnalytics(app)).catch(()=>{});
+}catch(e){fail(e)}
+let L={name:"Ragdoll Baller League",season:"Season 1",teams:[],matches:[],logos:{},ep:{},players:[],rules:"",note:"EP = 1 extra point is awarded to the winning team of the Pressure Point challenge every matchday"},P=[],U=null,msg="";
+const $=s=>document.querySelector(s);
+let R=location.hash.slice(1);
+const E=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const cr=n=>{const g=(L.logos||{})[n];if(/^data:image\//.test(g||""))return`<i class="cr"><img src="${g}" alt=""></i>`;let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%360;return`<i class="cr" style="background:hsl(${h} 70% 55%)">${E(n.replace(/[^A-Za-z0-9 ]/g,"").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase())}</i>`};
+const im=p=>/^data:image\//.test(p.img||"")?`<img src="${p.img}" alt="">`:"";
+const back='<a class="pill back" href="#">← Back to home</a>';
+const saveL=()=>setDoc(LD,L).catch(e=>{msg="Not saved: "+e.code;fail(e);go()});
+function table(){const t={};L.teams.forEach(n=>t[n]={n,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0,ep:+(L.ep||{})[n]||0});
+L.matches.forEach(m=>{const a=t[m.h],b=t[m.a];if(m.hs==null||m.as==null||!a||!b)return;a.p++;b.p++;a.gf+=m.hs;a.ga+=m.as;b.gf+=m.as;b.ga+=m.hs;
+if(m.hs>m.as){a.w++;a.pts+=3;b.l++}else if(m.hs<m.as){b.w++;b.pts+=3;a.l++}else{a.d++;b.d++;a.pts++;b.pts++}});
+return Object.values(t).sort((x,y)=>(y.pts+y.ep)-(x.pts+x.ep)||(y.gf-y.ga)-(x.gf-x.ga)||y.gf-x.gf||x.n.localeCompare(y.n))}
+function gen(teams){const t=[...teams];if(t.length%2)t.push(null);const n=t.length,o=[];
+for(let r=0;r<n-1;r++){for(let i=0;i<n/2;i++){const a=t[i],b=t[n-1-i];if(a&&b)o.push({md:r+1,h:r%2?b:a,a:r%2?a:b,hs:null,as:null})}t.splice(1,0,t.pop())}return o}
+const card=(p,i,c)=>`<a class="${c} in" style="--i:${i}" href="#post/${p.id}">${im(p)}<div class="cap h">${E(p.title)}</div></a>`;
+const V={
+home(){const p=P[0];return`<div class="grid"><div>${p?card(p,0,"hero"):'<div class="pan in">No news yet.</div>'}<div class="cards">${P.slice(1,10).map((x,i)=>card(x,i+1,"card")).join("")}</div></div>
+<aside><div class="pan in"><h3 class="h">Next up</h3>${L.matches.filter(m=>m.hs==null).slice(0,6).map(m=>`<div class="up"><b>${cr(m.h)}${E(m.h)}</b><small>MD ${m.md}</small><b>${E(m.a)}${cr(m.a).replace('margin-right:8px','')}</b></div>`).join("")||'<span class="mut">No fixtures yet.</span>'}</div>
+<div class="pan in" style="--i:2"><h3 class="h">Want to help out?</h3><p class="mut">We are looking for moderators.</p><a class="btn" href="#apply">Apply now</a></div></aside></div>`},
+table(){const t=table();return`${back}<h2 class="t h">League table</h2><div class="pan scroll"><table><thead><tr><th>#</th><th>CLUB</th><th>PLD</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>EP</th><th>PTS</th></tr></thead><tbody>${t.map((r,i)=>`<tr style="--i:${i}"><td>${i+1}</td><td>${cr(r.n)}${E(r.n)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf-r.ga}</td><td>${r.ep}</td><td>${r.pts+r.ep}</td></tr>`).join("")}</tbody></table>${t.length?"":'<p class="mut">No teams yet.</p>'}${L.note?`<p class="mut" style="font-size:11px;text-align:center">${E(L.note)}</p>`:""}</div>`},
+fixtures(){const mds=[...new Set(L.matches.map(m=>m.md))];return`${back}<h2 class="t h">Fixtures &amp; results</h2>${mds.map(d=>`<h3 class="h mut">Matchday ${d}</h3>${L.matches.filter(m=>m.md==d).map((m,i)=>`<div class="fx in" style="--i:${i}"><span>${E(m.h)} ${cr(m.h).replace("margin-right:8px","")}</span><span class="s">${m.hs==null?"vs":m.hs+" – "+m.as}</span><span>${cr(m.a)}${E(m.a)}</span></div>`).join("")}`).join("")||'<p class="mut">No fixtures yet.</p>'}`},
+players(){const S=[["Goals","g"],["Assists","a"],["Shots on target","sot"],["Shots saved","sv"]];
+return`${back}<h2 class="t h">Player stats</h2><div class="pgrid">${S.map(([t,k],i)=>{const r=[...L.players].filter(p=>p[k]>0).sort((x,y)=>y[k]-x[k]).slice(0,5);return`<div class="pan in" style="--i:${i}"><h3 class="h">${t}</h3>${r.map((p,j)=>`<div class="up2"><span>${j+1}. ${p.t?cr(p.t):""}${E(p.n)}</span><b>${p[k]}</b></div>`).join("")||'<span class="mut">No data yet.</span>'}</div>`}).join("")}</div>`},
+teamstats(){const t=table();return`${back}<h2 class="t h">Team stats</h2><div class="pan scroll"><table class="l"><thead><tr><th>CLUB</th><th>PLD</th><th>GF</th><th>GA</th><th>GD</th><th>GF/G</th><th>GA/G</th></tr></thead><tbody>${t.map((r,i)=>`<tr style="--i:${i}"><td>${cr(r.n)}${E(r.n)}</td><td>${r.p}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gf-r.ga}</td><td>${r.p?(r.gf/r.p).toFixed(1):"-"}</td><td>${r.p?(r.ga/r.p).toFixed(1):"-"}</td></tr>`).join("")}</tbody></table>${t.length?"":'<p class="mut">No teams yet.</p>'}</div>`},
+rules(){return`${back}<h2 class="t h">Rules</h2><div class="art"><p>${E(L.rules)||'<span class="mut">No rules published yet.</span>'}</p></div>`},
+post(id){const p=P.find(x=>x.id==id);return back+(p?`<article class="art"><h2 class="t h">${E(p.title)}</h2><span class="mut">${new Date(p.ts).toLocaleDateString()}</span>${im(p)}<p>${E(p.body)}</p></article>`:'<p class="mut">Post not found.</p>')},
+admin(){if(!U)return`${back}<div style="max-width:360px"><h2 class="t h">Admin login</h2><div class="r"><input id="em" type="email" placeholder="Email" autocomplete="username"></div><div class="r"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"></div><button class="btn" data-a="in">Log in</button><p class="msg">${E(msg)}</p></div>`;
+const ms=[...new Set(L.matches.map(m=>m.md))];
+return`<div class="adm">${back}<button class="pill" data-a="out">Log out</button><p class="msg">${E(msg)}</p>
+<h3 class="h">Site</h3><div class="r"><input data-s="name" value="${E(L.name)}"><input data-s="season" value="${E(L.season)}"></div>
+<div class="r"><input data-s="note" placeholder="Table note" value="${E(L.note)}"></div><div class="r"><textarea data-s="rules" rows="6" placeholder="Rules page text">${E(L.rules)}</textarea></div>
+<h3 class="h">New post</h3><div class="r"><input id="pt" placeholder="Title"></div><div class="r"><textarea id="pb" rows="5" placeholder="Text"></textarea></div><div class="r"><input id="pf" type="file" accept="image/*"></div><button class="btn" data-a="post">Publish post</button>
+${P.map(p=>`<div class="r" style="margin-top:8px"><span style="flex:1">${E(p.title)}</span><button class="pill" data-a="delpost" data-id="${p.id}">Delete</button></div>`).join("")}
+<h3 class="h">Teams</h3><div class="r"><input id="tn" placeholder="Team name"><button class="btn" data-a="addteam">Add</button></div>
+${L.teams.map((n,i)=>`<div class="r">${cr(n)}<input data-rn="${i}" value="${E(n)}"><input type="number" title="Extra points" data-ep="${i}" value="${(L.ep||{})[n]||0}"><label class="pill">Logo<input type="file" accept="image/*" data-logo="${i}" hidden></label><button class="pill" data-a="rmteam" data-i="${i}">Remove</button></div>`).join("")}<p class="mut">The number is each team's extra points (EP). Rename a team by editing its name.</p>
+<button class="btn" data-a="gen">Generate fixtures (everyone plays everyone)</button>
+<h3 class="h">Players</h3><div class="r"><input id="pn" placeholder="Player name"><select id="ptm"><option value="">No team</option>${L.teams.map(n=>`<option>${E(n)}</option>`).join("")}</select><button class="btn" data-a="addplayer">Add</button></div>
+${L.players.map((p,i)=>`<div class="r"><span style="flex:1">${E(p.n)} <small class="mut">${E(p.t)}</small></span>${[["g","Goals"],["a","Assists"],["sot","On target"],["sv","Saved"]].map(([k,t])=>`<input type="number" min="0" title="${t}" data-pl="${i}" data-k="${k}" value="${p[k]}">`).join("")}<button class="pill" data-a="rmplayer" data-i="${i}">✕</button></div>`).join("")}<p class="mut">Order of numbers: goals, assists, shots on target, shots saved.</p>
+<h3 class="h">Add a match</h3><div class="r"><input id="mmd" type="number" min="1" value="1" title="Matchday"><select id="mh"><option value="">Home team</option>${L.teams.map(n=>`<option>${E(n)}</option>`).join("")}</select><select id="ma"><option value="">Away team</option>${L.teams.map(n=>`<option>${E(n)}</option>`).join("")}</select><button class="btn" data-a="addmatch">Add</button></div>
+<h3 class="h">Results</h3>${ms.map(d=>`<p class="mut">Matchday ${d}</p>${L.matches.map((m,i)=>m.md==d?`<div class="r"><span style="flex:1;text-align:right">${E(m.h)}</span><input type="number" min="0" data-m="${i}" data-k="hs" value="${m.hs??""}"><input type="number" min="0" data-m="${i}" data-k="as" value="${m.as??""}"><span style="flex:1">${E(m.a)}</span><button class="pill" data-a="rmmatch" data-i="${i}" title="Delete match">✕</button></div>`:"").join("")}`).join("")||'<p class="mut">Add teams, then generate fixtures.</p>'}</div>`}};
+function go(){const r=R.split("/"),k=r[0],ap=$("#apply"),a=$("#app");
+ap.hidden=k!="apply";a.hidden=k=="apply";$("#lg").textContent=U?"Admin":"Log in";$("#logo").textContent=L.name;$("#ft").textContent=L.name;document.title=L.name;
+if(k!="apply")a.innerHTML='<div class="pg">'+(Object.hasOwn(V,k)?V[k](r[1]):V.home())+"</div>"}
+const busy=()=>/INPUT|TEXTAREA/.test(document.activeElement.tagName)&&R=="admin";
+if(db){
+onSnapshot(LD,s=>{if(s.exists())L={...L,...s.data()};if(!busy())go()},fail);
+onSnapshot(query(collection(db,"posts"),orderBy("ts","desc")),s=>{P=s.docs.map(d=>({id:d.id,...d.data()}));if(!busy())go()},fail);
+onAuthStateChanged(auth,u=>{U=u;go()});
+}
+addEventListener("hashchange",()=>{R=location.hash.slice(1);msg="";go();scrollTo(0,0)});
+const shrink=(f,m=900,t="image/jpeg")=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement("canvas"),s=Math.min(1,m/i.width);c.width=i.width*s;c.height=i.height*s;c.getContext("2d").drawImage(i,0,0,c.width,c.height);r(c.toDataURL(t,.75))};i.src=URL.createObjectURL(f)});
+document.addEventListener("change",async e=>{const d=e.target.dataset;
+if(d.logo!=null&&e.target.files[0]){L.logos={...L.logos,[L.teams[d.logo]]:await shrink(e.target.files[0],96,"image/png")};await saveL();go()}
+else if(d.rn!=null){const o=L.teams[d.rn],n=e.target.value.trim();if(!n||L.teams.includes(n)){go();return}
+L.teams[d.rn]=n;L.matches.forEach(m=>{if(m.h==o)m.h=n;if(m.a==o)m.a=n});L.players.forEach(p=>{if(p.t==o)p.t=n});
+if(L.logos[o]){L.logos[n]=L.logos[o];delete L.logos[o]}if(L.ep[o]!=null){L.ep[n]=L.ep[o];delete L.ep[o]}await saveL();go()}});
+let tm;document.addEventListener("input",e=>{const d=e.target.dataset;
+if(d.s){L[d.s]=e.target.value}else if(d.m){L.matches[d.m][d.k]=e.target.value===""?null:+e.target.value}
+else if(d.ep!=null){L.ep={...L.ep,[L.teams[d.ep]]:+e.target.value||0}}
+else if(d.pl!=null){L.players[d.pl][d.k]=+e.target.value||0}else return;clearTimeout(tm);tm=setTimeout(saveL,700)});
+document.addEventListener("click",async e=>{const l=e.target.closest("a[href^='#']");if(l){e.preventDefault();R=l.getAttribute("href").slice(1);try{location.hash=R}catch(x){}msg="";go();scrollTo(0,0);return}const d=e.target.dataset;if(!d.a)return;
+try{if(d.a=="in"){await signInWithEmailAndPassword(auth,$("#em").value,$("#pw").value);msg=""}
+else if(d.a=="out")await signOut(auth);
+else if(d.a=="post"){const t=$("#pt").value.trim();if(!t){msg="Add a title.";go();return}const f=$("#pf").files[0];await addDoc(collection(db,"posts"),{title:t,body:$("#pb").value,img:f?await shrink(f):"",ts:Date.now()});msg="Published.";$("#pt").value=$("#pb").value=""}
+else if(d.a=="delpost")await deleteDoc(doc(db,"posts",d.id));
+else if(d.a=="addteam"){const n=$("#tn").value.trim();if(n&&!L.teams.includes(n)){L.teams.push(n);await saveL()}}
+else if(d.a=="rmteam"){const n=L.teams[d.i];L.teams.splice(d.i,1);L.matches=L.matches.filter(m=>m.h!=n&&m.a!=n);L.players=L.players.filter(p=>p.t!=n);delete L.logos[n];delete L.ep[n];await saveL()}
+else if(d.a=="addmatch"){const h=$("#mh").value,a=$("#ma").value;if(!h||!a||h==a){msg="Pick two different teams.";go();return}L.matches.push({md:Math.max(1,+$("#mmd").value||1),h,a,hs:null,as:null});L.matches.sort((x,y)=>x.md-y.md);msg="Match added.";await saveL()}
+else if(d.a=="rmmatch"){L.matches.splice(d.i,1);await saveL()}
+else if(d.a=="addplayer"){const n=$("#pn").value.trim();if(n){L.players.push({n,t:$("#ptm").value,g:0,a:0,sot:0,sv:0});await saveL()}}
+else if(d.a=="rmplayer"){L.players.splice(d.i,1);await saveL()}
+else if(d.a=="gen"){if(L.teams.length<2){msg="Add at least 2 teams.";go();return}if(!L.matches.length||confirm("This replaces all fixtures and results. Continue?")){L.matches=gen(L.teams);await saveL()}}
+}catch(er){msg=er.code||er.message;fail(er)}go()});
+go();
+</script>
+</body>
+</html>
