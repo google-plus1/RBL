@@ -98,6 +98,7 @@ import(B+"firebase-analytics.js").then(m=>m.getAnalytics(app)).catch(()=>{});
 let L={name:"Ragdoll Baller League",season:"Season 1",teams:[],matches:[],logos:{},ep:{},players:[],rules:"",note:"EP = 1 extra point is awarded to the winning team of the Pressure Point challenge every matchday"},P=[],U=null,msg="";
 const $=s=>document.querySelector(s);
 let R=location.hash.slice(1);
+let D={t:"",b:"",f:null};
 const E=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const cr=n=>{const g=(L.logos||{})[n];if(/^data:image\//.test(g||""))return`<i class="cr"><img src="${g}" alt=""></i>`;let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%360;return`<i class="cr" style="background:hsl(${h} 70% 55%)">${E(n.replace(/[^A-Za-z0-9 ]/g,"").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase())}</i>`};
 const im=p=>/^data:image\//.test(p.img||"")?`<img src="${p.img}" alt="">`:"";
@@ -111,7 +112,7 @@ function gen(teams){const t=[...teams];if(t.length%2)t.push(null);const n=t.leng
 for(let r=0;r<n-1;r++){for(let i=0;i<n/2;i++){const a=t[i],b=t[n-1-i];if(a&&b)o.push({md:r+1,h:r%2?b:a,a:r%2?a:b,hs:null,as:null})}t.splice(1,0,t.pop())}return o}
 const card=(p,i,c)=>`<a class="${c} in" style="--i:${i}" href="#post/${p.id}">${im(p)}<div class="cap h">${E(p.title)}</div></a>`;
 const V={
-home(){const p=P[0];return`<div class="grid"><div>${p?card(p,0,"hero"):'<div class="pan in">No news yet.</div>'}<div class="cards">${P.slice(1,10).map((x,i)=>card(x,i+1,"card")).join("")}</div></div>
+home(){const p=P[0];return`<div class="grid"><div>${p?card(p,0,"hero"):'<div class="pan in">No news yet.</div>'}<div class="cards">${P.slice(1).map((x,i)=>card(x,i+1,"card")).join("")}</div></div>
 <aside><div class="pan in"><h3 class="h">Next up</h3>${L.matches.filter(m=>m.hs==null).slice(0,6).map(m=>`<div class="up"><b>${cr(m.h)}${E(m.h)}</b><small>MD ${m.md}</small><b>${E(m.a)}${cr(m.a).replace('margin-right:8px','')}</b></div>`).join("")||'<span class="mut">No fixtures yet.</span>'}</div>
 <div class="pan in" style="--i:2"><h3 class="h">Want to help out?</h3><p class="mut">We are looking for moderators.</p><a class="btn" href="#apply">Apply now</a></div></aside></div>`},
 table(){const t=table();return`${back}<h2 class="t h">League table</h2><div class="pan scroll"><table><thead><tr><th>#</th><th>CLUB</th><th>PLD</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>EP</th><th>PTS</th></tr></thead><tbody>${t.map((r,i)=>`<tr style="--i:${i}"><td>${i+1}</td><td>${cr(r.n)}${E(r.n)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf-r.ga}</td><td>${r.ep}</td><td>${r.pts+r.ep}</td></tr>`).join("")}</tbody></table>${t.length?"":'<p class="mut">No teams yet.</p>'}${L.note?`<p class="mut" style="font-size:11px;text-align:center">${E(L.note)}</p>`:""}</div>`},
@@ -126,7 +127,7 @@ const ms=[...new Set(L.matches.map(m=>m.md))];
 return`<div class="adm">${back}<button class="pill" data-a="out">Log out</button><p class="msg">${E(msg)}</p>
 <h3 class="h">Site</h3><div class="r"><input data-s="name" value="${E(L.name)}"><input data-s="season" value="${E(L.season)}"></div>
 <div class="r"><input data-s="note" placeholder="Table note" value="${E(L.note)}"></div><div class="r"><textarea data-s="rules" rows="6" placeholder="Rules page text">${E(L.rules)}</textarea></div>
-<h3 class="h">New post</h3><div class="r"><input id="pt" placeholder="Title"></div><div class="r"><textarea id="pb" rows="5" placeholder="Text"></textarea></div><div class="r"><input id="pf" type="file" accept="image/*"></div><button class="btn" data-a="post">Publish post</button>
+<h3 class="h">New post</h3><div class="r"><input id="pt" data-dr="t" placeholder="Title" value="${E(D.t)}"></div><div class="r"><textarea id="pb" data-dr="b" rows="5" placeholder="Text">${E(D.b)}</textarea></div><div class="r"><input id="pf" data-pf="1" type="file" accept="image/*"><span id="pfn" class="mut">${D.f?E(D.f.name):""}</span></div><button class="btn" data-a="post">Publish post</button>
 ${P.map(p=>`<div class="r" style="margin-top:8px"><span style="flex:1">${E(p.title)}</span><button class="pill" data-a="delpost" data-id="${p.id}">Delete</button></div>`).join("")}
 <h3 class="h">Teams</h3><div class="r"><input id="tn" placeholder="Team name"><button class="btn" data-a="addteam">Add</button></div>
 ${L.teams.map((n,i)=>`<div class="r">${cr(n)}<input data-rn="${i}" value="${E(n)}"><input type="number" title="Extra points" data-ep="${i}" value="${(L.ep||{})[n]||0}"><label class="pill">Logo<input type="file" accept="image/*" data-logo="${i}" hidden></label><button class="pill" data-a="rmteam" data-i="${i}">Remove</button></div>`).join("")}<p class="mut">The number is each team's extra points (EP). Rename a team by editing its name.</p>
@@ -145,21 +146,21 @@ onSnapshot(query(collection(db,"posts"),orderBy("ts","desc")),s=>{P=s.docs.map(d
 onAuthStateChanged(auth,u=>{U=u;go()});
 }
 addEventListener("hashchange",()=>{R=location.hash.slice(1);msg="";go();scrollTo(0,0)});
-const shrink=(f,m=900,t="image/jpeg")=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement("canvas"),s=Math.min(1,m/i.width);c.width=i.width*s;c.height=i.height*s;c.getContext("2d").drawImage(i,0,0,c.width,c.height);r(c.toDataURL(t,.75))};i.src=URL.createObjectURL(f)});
-document.addEventListener("change",async e=>{const d=e.target.dataset;
+const shrink=(f,m=900,t="image/jpeg")=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement("canvas"),s=Math.min(1,m/i.width);c.width=i.width*s;c.height=i.height*s;c.getContext("2d").drawImage(i,0,0,c.width,c.height);let q=.75,u=c.toDataURL(t,q);while(u.length>700000&&q>.3&&t=="image/jpeg"){q-=.1;u=c.toDataURL(t,q)}r(u)};i.src=URL.createObjectURL(f)});
+document.addEventListener("change",async e=>{const d=e.target.dataset;if(d.pf!=null){D.f=e.target.files[0]||null;const n=$("#pfn");if(n)n.textContent=D.f?D.f.name:"";return}
 if(d.logo!=null&&e.target.files[0]){L.logos={...L.logos,[L.teams[d.logo]]:await shrink(e.target.files[0],96,"image/png")};await saveL();go()}
 else if(d.rn!=null){const o=L.teams[d.rn],n=e.target.value.trim();if(!n||L.teams.includes(n)){go();return}
 L.teams[d.rn]=n;L.matches.forEach(m=>{if(m.h==o)m.h=n;if(m.a==o)m.a=n});L.players.forEach(p=>{if(p.t==o)p.t=n});
 if(L.logos[o]){L.logos[n]=L.logos[o];delete L.logos[o]}if(L.ep[o]!=null){L.ep[n]=L.ep[o];delete L.ep[o]}await saveL();go()}});
-let tm;document.addEventListener("input",e=>{const d=e.target.dataset;
+let tm;document.addEventListener("input",e=>{const d=e.target.dataset;if(d.dr){D[d.dr]=e.target.value;return}
 if(d.s){L[d.s]=e.target.value}else if(d.m){L.matches[d.m][d.k]=e.target.value===""?null:+e.target.value}
 else if(d.ep!=null){L.ep={...L.ep,[L.teams[d.ep]]:+e.target.value||0}}
 else if(d.pl!=null){L.players[d.pl][d.k]=+e.target.value||0}else return;clearTimeout(tm);tm=setTimeout(saveL,700)});
 document.addEventListener("click",async e=>{const l=e.target.closest("a[href^='#']");if(l){e.preventDefault();R=l.getAttribute("href").slice(1);try{location.hash=R}catch(x){}msg="";go();scrollTo(0,0);return}const d=e.target.dataset;if(!d.a)return;
 try{if(d.a=="in"){await signInWithEmailAndPassword(auth,$("#em").value,$("#pw").value);msg=""}
 else if(d.a=="out")await signOut(auth);
-else if(d.a=="post"){const t=$("#pt").value.trim();if(!t){msg="Add a title.";go();return}const f=$("#pf").files[0];await addDoc(collection(db,"posts"),{title:t,body:$("#pb").value,img:f?await shrink(f):"",ts:Date.now()});msg="Published.";$("#pt").value=$("#pb").value=""}
-else if(d.a=="delpost")await deleteDoc(doc(db,"posts",d.id));
+else if(d.a=="post"){const t=D.t.trim();if(!t){msg="Add a title.";go();return}const img=D.f?await shrink(D.f):"";await addDoc(collection(db,"posts"),{title:t,body:D.b,img,ts:Date.now()});D={t:"",b:"",f:null};msg="Published."}
+else if(d.a=="delpost"){if(confirm("Delete this post for everyone?"))await deleteDoc(doc(db,"posts",d.id))}
 else if(d.a=="addteam"){const n=$("#tn").value.trim();if(n&&!L.teams.includes(n)){L.teams.push(n);await saveL()}}
 else if(d.a=="rmteam"){const n=L.teams[d.i];L.teams.splice(d.i,1);L.matches=L.matches.filter(m=>m.h!=n&&m.a!=n);L.players=L.players.filter(p=>p.t!=n);delete L.logos[n];delete L.ep[n];await saveL()}
 else if(d.a=="addmatch"){const h=$("#mh").value,a=$("#ma").value;if(!h||!a||h==a){msg="Pick two different teams.";go();return}L.matches.push({md:Math.max(1,+$("#mmd").value||1),h,a,hs:null,as:null});L.matches.sort((x,y)=>x.md-y.md);msg="Match added.";await saveL()}
