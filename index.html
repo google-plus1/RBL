@@ -58,6 +58,17 @@ input,textarea,select{font:inherit;color:var(--fg);background:#3a3a3d;border:0;b
 .adm h3{color:var(--y);margin:26px 0 10px}
 .msg{color:var(--y);min-height:20px}
 footer{padding:40px 0 30px;color:var(--mut);font-size:12px;text-align:center}
+#intro{position:fixed;inset:0;z-index:20;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .6s,visibility .6s}
+#intro.out{opacity:0;visibility:hidden}
+.bw{animation:drop 1.5s cubic-bezier(.4,0,.6,1) both}
+.ball{width:96px;height:96px;display:block;animation:spin 1.5s ease-out both;filter:drop-shadow(0 12px 18px #f4ff1c33)}
+.it{font-size:clamp(26px,7vw,60px);letter-spacing:-.02em;text-align:center;opacity:0;animation:up .8s 1.5s both}
+.it b{color:var(--y)}
+#skip{position:absolute;right:18px;bottom:18px}
+@keyframes drop{0%{transform:translateY(-60vh)}38%{transform:translateY(0)}52%{transform:translateY(-120px)}66%{transform:translateY(0)}78%{transform:translateY(-45px)}90%{transform:translateY(0)}95%{transform:translateY(-12px)}100%{transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(720deg)}}
+.off{position:absolute;left:-9999px;top:0;width:100%;max-width:1060px;visibility:hidden;pointer-events:none}
+#apply iframe{max-width:100%}
 .cr img{width:100%;height:100%;border-radius:50%;object-fit:cover}
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .up2{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);font-weight:700}.up2 b{color:var(--y)}
@@ -66,18 +77,22 @@ table.l td:nth-child(2),table.l th:nth-child(2){text-align:center}table.l td:fir
 </style>
 </head>
 <body>
+<div id="intro"><div class="bw"><svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="47" fill="#fff" stroke="#000" stroke-width="3"/><polygon points="50,30 69,44 62,66 38,66 31,44" fill="#000"/><path d="M50 30V4M69 44l24-8M62 66l14 20M38 66L24 86M31 44L7 36" stroke="#000" stroke-width="3" fill="none"/></svg></div><div class="it h">Ragdoll <b>Baller</b> League</div><button class="pill" id="skip">Skip</button></div>
 <div class="top"></div>
 <header><div class="w"><a class="logo h" id="logo" href="#">Ragdoll Baller League</a>
 <nav><a href="#">Home</a><a href="#table">Table</a><a href="#fixtures">Fixtures</a><a href="#players">Players</a><a href="#teamstats">Teams</a><a href="#rules">Rules</a><a href="#apply">Apply</a></nav>
 <a class="pill on" id="lg" href="#admin">Log in</a></div></header>
 <main class="w" id="app"></main>
-<div class="w pg" id="apply" hidden>
+<div class="w pg off" id="apply">
 <a class="pill back" href="#">← Back to home</a>
 <h2 class="t h" id="apt">Become a moderator</h2><p class="mut" id="api"></p>
 <div style="overflow-x:auto"><script type="text/javascript" src="https://surveymars.com/js/qembed.js?activity=iJs9C21Jx&source=iframe&width=912"></script></div>
 </div>
 <footer>© <span id="ft">Ragdoll Baller League</span></footer>
 <script type="module">
+const iv=document.getElementById("intro"),hideIntro=()=>{iv.classList.add("out");setTimeout(()=>iv.remove(),700)};
+document.getElementById("skip").onclick=hideIntro;
+try{if(sessionStorage.getItem("seen")||matchMedia("(prefers-reduced-motion:reduce)").matches)iv.remove();else{sessionStorage.setItem("seen","1");setTimeout(hideIntro,3600)}}catch(e){setTimeout(hideIntro,3600)}
 const bar=t=>{let b=document.getElementById("err");if(!b){b=document.createElement("div");b.id="err";b.style.cssText="position:fixed;left:0;right:0;bottom:0;background:#b00020;color:#fff;padding:10px 16px;z-index:9;font:13px Arial";document.body.appendChild(b)}b.textContent=t};
 const HINT={"permission-denied":"Firestore rules block this. Publish firestore.rules in the Firebase console.","not-found":"Create the Firestore database in the Firebase console.","unavailable":"Cannot reach Firebase. Check your connection.","auth/invalid-credential":"Wrong email or password, or this user is not in Firebase Authentication.","auth/operation-not-allowed":"Enable Email/Password under Authentication > Sign-in method.","auth/unauthorized-domain":"Add this domain under Authentication > Settings > Authorized domains."};
 const fail=e=>bar((HINT[e&&e.code]||"")+" ["+((e&&(e.code||e.message))||e)+"]");
@@ -103,6 +118,22 @@ const E=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt
 const cr=n=>{const g=(L.logos||{})[n];if(/^(data:image\/|https:\/\/)/.test(g||""))return`<i class="cr"><img src="${g}" alt=""></i>`;let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%360;return`<i class="cr" style="background:hsl(${h} 70% 55%)">${E(n.replace(/[^A-Za-z0-9 ]/g,"").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase())}</i>`};
 const im=p=>/^(data:image\/|https:\/\/)/.test(p.img||"")?`<img src="${p.img}" alt="">`:"";
 const back='<a class="pill back" href="#">← Back to home</a>';
+const RULES=`⚽ RBL – OFFICIAL MATCH SETTINGS
+MATCH RULES & SETTINGS
+
+• Match Length: 10 Minutes
+• Half-Time: ON
+• Team Size: 8-A-Side
+• Field Size: Bigger (+25%)
+• Draw at Full Time: Draw Stands
+• Fouls: Free Kicks & Cards
+• Tackle Mechanics: ON
+• Red Card Length: 2 Minutes
+• Offside: ON
+• VAR Reviews: ON
+• Keeper Shot Flash: ON
+
+All matches must follow these official RBL settings.`;
 const T=(k,d)=>((L.pg||{})[k])||d;
 const H=(k,d)=>`<h2 class="t h">${E(T(k,d))}</h2>${T(k+"_i","")?`<p class="mut">${E(T(k+"_i",""))}</p>`:""}`;
 const saveL=()=>setDoc(LD,L).catch(e=>{msg="Not saved: "+e.code;fail(e);go()});
@@ -122,13 +153,13 @@ fixtures(){const mds=[...new Set(L.matches.map(m=>m.md))];return`${back}${H("fix
 players(){const S=[["Goals","g"],["Assists","a"],["Shots on target","sot"],["Shots saved","sv"]];
 return`${back}${H("players","Player stats")}<div class="pgrid">${S.map(([t,k],i)=>{const r=[...L.players].filter(p=>p[k]>0).sort((x,y)=>y[k]-x[k]).slice(0,5);return`<div class="pan in" style="--i:${i}"><h3 class="h">${t}</h3>${r.map((p,j)=>`<div class="up2"><span>${j+1}. ${p.t?cr(p.t):""}${E(p.n)}</span><b>${p[k]}</b></div>`).join("")||'<span class="mut">No data yet.</span>'}</div>`}).join("")}</div>`},
 teamstats(){const t=table();return`${back}${H("teamstats","Team stats")}<div class="pan scroll"><table class="l"><thead><tr><th>CLUB</th><th>PLD</th><th>GF</th><th>GA</th><th>GD</th><th>GF/G</th><th>GA/G</th></tr></thead><tbody>${t.map((r,i)=>`<tr style="--i:${i}"><td>${cr(r.n)}${E(r.n)}</td><td>${r.p}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gf-r.ga}</td><td>${r.p?(r.gf/r.p).toFixed(1):"-"}</td><td>${r.p?(r.ga/r.p).toFixed(1):"-"}</td></tr>`).join("")}</tbody></table>${t.length?"":'<p class="mut">No teams yet.</p>'}</div>`},
-rules(){return`${back}${H("rules","Rules")}<div class="art"><p>${E(L.rules)||'<span class="mut">No rules published yet.</span>'}</p></div>`},
+rules(){return`${back}${H("rules","Rules")}<div class="art"><p>${E(L.rules||RULES)}</p></div>`},
 post(id){const p=P.find(x=>x.id==id);return back+(p?`<article class="art"><h2 class="t h">${E(p.title)}</h2><span class="mut">${new Date(p.ts).toLocaleDateString()}</span>${im(p)}<p>${E(p.body)}</p></article>`:'<p class="mut">Post not found.</p>')},
 admin(){if(!U)return`${back}<div style="max-width:360px"><h2 class="t h">Admin login</h2><div class="r"><input id="em" type="email" placeholder="Email" autocomplete="username"></div><div class="r"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"></div><button class="btn" data-a="in">Log in</button><p class="msg">${E(msg)}</p></div>`;
 const ms=[...new Set(L.matches.map(m=>m.md))];
 return`<div class="adm">${back}<button class="pill" data-a="out">Log out</button><p class="msg">${E(msg)}</p>
 <h3 class="h">Site</h3><div class="r"><input data-s="name" value="${E(L.name)}"><input data-s="season" value="${E(L.season)}"></div>
-<div class="r"><input data-s="note" placeholder="Table note" value="${E(L.note)}"></div><div class="r"><textarea data-s="rules" rows="6" placeholder="Rules page text">${E(L.rules)}</textarea></div>
+<div class="r"><input data-s="note" placeholder="Table note" value="${E(L.note)}"></div><div class="r"><textarea data-s="rules" rows="6" placeholder="Rules page text">${E(L.rules||RULES)}</textarea></div>
 <h3 class="h">Page titles and intro text</h3>${[["table","League table"],["fixtures","Fixtures & results"],["players","Player stats"],["teamstats","Team stats"],["rules","Rules"],["apply","Become a moderator"]].map(([k,t])=>`<div class="r"><input data-pg="${k}" placeholder="${t}" value="${E(T(k,""))}"><input data-pg="${k}_i" placeholder="Intro text (optional)" value="${E(T(k+"_i",""))}"></div>`).join("")}
 <div class="r"><input data-pg="cta" placeholder="Home box title" value="${E(T("cta",""))}"><input data-pg="cta_i" placeholder="Home box text" value="${E(T("cta_i",""))}"><input data-pg="cta_b" placeholder="Button text" value="${E(T("cta_b",""))}"></div>
 <h3 class="h">New post</h3><div class="r"><input id="pt" data-dr="t" placeholder="Title" value="${E(D.t)}"></div><div class="r"><textarea id="pb" data-dr="b" rows="5" placeholder="Text">${E(D.b)}</textarea></div><div class="r"><input id="pf" data-pf="1" type="file" accept="image/*"><span id="pfn" class="mut">${D.f?E(D.f.name):""}</span></div><div class="r"><input data-dr="u" placeholder="...or paste an image link (https://...)" value="${E(D.u)}"></div><button class="btn" data-a="post">Publish post</button>
@@ -141,7 +172,7 @@ ${L.players.map((p,i)=>`<div class="r"><input data-pn="${i}" value="${E(p.n)}" s
 <h3 class="h">Add a match</h3><div class="r"><input id="mmd" type="number" min="1" value="1" title="Matchday"><select id="mh"><option value="">Home team</option>${L.teams.map(n=>`<option>${E(n)}</option>`).join("")}</select><select id="ma"><option value="">Away team</option>${L.teams.map(n=>`<option>${E(n)}</option>`).join("")}</select><button class="btn" data-a="addmatch">Add</button></div>
 <h3 class="h">Results</h3>${ms.map(d=>`<p class="mut">Matchday ${d}</p>${L.matches.map((m,i)=>m.md==d?`<div class="r"><span style="flex:1;text-align:right">${E(m.h)}</span><input type="number" min="0" data-m="${i}" data-k="hs" value="${m.hs??""}"><input type="number" min="0" data-m="${i}" data-k="as" value="${m.as??""}"><span style="flex:1">${E(m.a)}</span><button class="pill" data-a="rmmatch" data-i="${i}" title="Delete match">✕</button></div>`:"").join("")}`).join("")||'<p class="mut">Add teams, then generate fixtures.</p>'}</div>`}};
 function go(){const r=R.split("/"),k=r[0],ap=$("#apply"),a=$("#app");
-ap.hidden=k!="apply";a.hidden=k=="apply";$("#lg").textContent=U?"Admin":"Log in";$("#logo").textContent=L.name;$("#apt").textContent=T("apply","Become a moderator");$("#api").textContent=T("apply_i","");$("#ft").textContent=L.name;document.title=L.name;
+ap.classList.toggle("off",k!="apply");a.hidden=k=="apply";$("#lg").textContent=U?"Admin":"Log in";$("#logo").textContent=L.name;$("#apt").textContent=T("apply","Become a moderator");$("#api").textContent=T("apply_i","");$("#ft").textContent=L.name;document.title=L.name;
 if(k!="apply")a.innerHTML='<div class="pg">'+(Object.hasOwn(V,k)?V[k](r[1]):V.home())+"</div>"}
 const busy=()=>/INPUT|TEXTAREA/.test(document.activeElement.tagName)&&R=="admin";
 if(db){
