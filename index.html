@@ -73,7 +73,7 @@ table.l td:nth-child(2),table.l th:nth-child(2){text-align:center}table.l td:fir
 <main class="w" id="app"></main>
 <div class="w pg" id="apply" hidden>
 <a class="pill back" href="#">← Back to home</a>
-<h2 class="t h">Become a moderator</h2>
+<h2 class="t h" id="apt">Become a moderator</h2><p class="mut" id="api"></p>
 <div style="overflow-x:auto"><script type="text/javascript" src="https://surveymars.com/js/qembed.js?activity=iJs9C21Jx&source=iframe&width=912"></script></div>
 </div>
 <footer>© <span id="ft">Ragdoll Baller League</span></footer>
@@ -84,25 +84,27 @@ const fail=e=>bar((HINT[e&&e.code]||"")+" ["+((e&&(e.code||e.message))||e)+"]");
 addEventListener("error",e=>bar("Error: "+e.message));
 addEventListener("unhandledrejection",e=>fail(e.reason));
 const B="https://www.gstatic.com/firebasejs/10.14.1/";
-let auth,db,LD,doc,setDoc,collection,addDoc,deleteDoc,onSnapshot,query,orderBy,onAuthStateChanged,signInWithEmailAndPassword,signOut;
+let auth,db,LD,doc,updateDoc,setDoc,collection,addDoc,deleteDoc,onSnapshot,query,orderBy,onAuthStateChanged,signInWithEmailAndPassword,signOut;
 try{
 const ld=(b,s)=>Promise.all(["app","auth","firestore"].map(n=>import(b+s[0]+n+s[1])));
 let m;try{m=await ld(B+"firebase-",["",".js"])}catch(e){m=await ld("https://cdn.jsdelivr.net/npm/firebase@10.14.1/",["","/+esm"])}
 const[a,au,fs]=m;
-({doc,setDoc,collection,addDoc,deleteDoc,onSnapshot,query,orderBy}=fs);
+({doc,updateDoc,setDoc,collection,addDoc,deleteDoc,onSnapshot,query,orderBy}=fs);
 ({onAuthStateChanged,signInWithEmailAndPassword,signOut}=au);
 const app=a.initializeApp({apiKey:"AIzaSyApMiia5qz1TnFLcbeWTlIsemRwMLj8oJ4",authDomain:"rbls-d81b5.firebaseapp.com",databaseURL:"https://rbls-d81b5-default-rtdb.europe-west1.firebasedatabase.app",projectId:"rbls-d81b5",storageBucket:"rbls-d81b5.firebasestorage.app",messagingSenderId:"965959812283",appId:"1:965959812283:web:3bb5a8d3fa05d7d118d59e",measurementId:"G-WFTMEB7RHV"});
 auth=au.getAuth(app);db=fs.getFirestore(app);LD=doc(db,"league","main");
 import(B+"firebase-analytics.js").then(m=>m.getAnalytics(app)).catch(()=>{});
 }catch(e){fail(e)}
-let L={name:"Ragdoll Baller League",season:"Season 1",teams:[],matches:[],logos:{},ep:{},players:[],rules:"",note:"EP = 1 extra point is awarded to the winning team of the Pressure Point challenge every matchday"},P=[],U=null,msg="";
+let L={name:"Ragdoll Baller League",season:"Season 1",teams:[],matches:[],logos:{},pg:{},ep:{},players:[],rules:"",note:"EP = 1 extra point is awarded to the winning team of the Pressure Point challenge every matchday"},P=[],U=null,msg="";
 const $=s=>document.querySelector(s);
 let R=location.hash.slice(1);
-let D={t:"",b:"",f:null,u:""};
+let D={t:"",b:"",f:null,u:""};const PT={};
 const E=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const cr=n=>{const g=(L.logos||{})[n];if(/^(data:image\/|https:\/\/)/.test(g||""))return`<i class="cr"><img src="${g}" alt=""></i>`;let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%360;return`<i class="cr" style="background:hsl(${h} 70% 55%)">${E(n.replace(/[^A-Za-z0-9 ]/g,"").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase())}</i>`};
 const im=p=>/^(data:image\/|https:\/\/)/.test(p.img||"")?`<img src="${p.img}" alt="">`:"";
 const back='<a class="pill back" href="#">← Back to home</a>';
+const T=(k,d)=>((L.pg||{})[k])||d;
+const H=(k,d)=>`<h2 class="t h">${E(T(k,d))}</h2>${T(k+"_i","")?`<p class="mut">${E(T(k+"_i",""))}</p>`:""}`;
 const saveL=()=>setDoc(LD,L).catch(e=>{msg="Not saved: "+e.code;fail(e);go()});
 function table(){const t={};L.teams.forEach(n=>t[n]={n,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0,ep:+(L.ep||{})[n]||0});
 L.matches.forEach(m=>{const a=t[m.h],b=t[m.a];if(m.hs==null||m.as==null||!a||!b)return;a.p++;b.p++;a.gf+=m.hs;a.ga+=m.as;b.gf+=m.as;b.ga+=m.hs;
@@ -114,30 +116,32 @@ const card=(p,i,c)=>`<a class="${c} in" style="--i:${i}" href="#post/${p.id}">${
 const V={
 home(){const p=P[0];return`<div class="grid"><div>${p?card(p,0,"hero"):'<div class="pan in">No news yet.</div>'}<div class="cards">${P.slice(1).map((x,i)=>card(x,i+1,"card")).join("")}</div></div>
 <aside><div class="pan in"><h3 class="h">Next up</h3>${L.matches.filter(m=>m.hs==null).slice(0,6).map(m=>`<div class="up"><b>${cr(m.h)}${E(m.h)}</b><small>MD ${m.md}</small><b>${E(m.a)}${cr(m.a).replace('margin-right:8px','')}</b></div>`).join("")||'<span class="mut">No fixtures yet.</span>'}</div>
-<div class="pan in" style="--i:2"><h3 class="h">Want to help out?</h3><p class="mut">We are looking for moderators.</p><a class="btn" href="#apply">Apply now</a></div></aside></div>`},
-table(){const t=table();return`${back}<h2 class="t h">League table</h2><div class="pan scroll"><table><thead><tr><th>#</th><th>CLUB</th><th>PLD</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>EP</th><th>PTS</th></tr></thead><tbody>${t.map((r,i)=>`<tr style="--i:${i}"><td>${i+1}</td><td>${cr(r.n)}${E(r.n)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf-r.ga}</td><td>${r.ep}</td><td>${r.pts+r.ep}</td></tr>`).join("")}</tbody></table>${t.length?"":'<p class="mut">No teams yet.</p>'}${L.note?`<p class="mut" style="font-size:11px;text-align:center">${E(L.note)}</p>`:""}</div>`},
-fixtures(){const mds=[...new Set(L.matches.map(m=>m.md))];return`${back}<h2 class="t h">Fixtures &amp; results</h2>${mds.map(d=>`<h3 class="h mut">Matchday ${d}</h3>${L.matches.filter(m=>m.md==d).map((m,i)=>`<div class="fx in" style="--i:${i}"><span>${E(m.h)} ${cr(m.h).replace("margin-right:8px","")}</span><span class="s">${m.hs==null?"vs":m.hs+" – "+m.as}</span><span>${cr(m.a)}${E(m.a)}</span></div>`).join("")}`).join("")||'<p class="mut">No fixtures yet.</p>'}`},
+<div class="pan in" style="--i:2"><h3 class="h">${E(T("cta","Want to help out?"))}</h3><p class="mut">${E(T("cta_i","We are looking for moderators."))}</p><a class="btn" href="#apply">${E(T("cta_b","Apply now"))}</a></div></aside></div>`},
+table(){const t=table();return`${back}${H("table","League table")}<div class="pan scroll"><table><thead><tr><th>#</th><th>CLUB</th><th>PLD</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>EP</th><th>PTS</th></tr></thead><tbody>${t.map((r,i)=>`<tr style="--i:${i}"><td>${i+1}</td><td>${cr(r.n)}${E(r.n)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf-r.ga}</td><td>${r.ep}</td><td>${r.pts+r.ep}</td></tr>`).join("")}</tbody></table>${t.length?"":'<p class="mut">No teams yet.</p>'}${L.note?`<p class="mut" style="font-size:11px;text-align:center">${E(L.note)}</p>`:""}</div>`},
+fixtures(){const mds=[...new Set(L.matches.map(m=>m.md))];return`${back}${H("fixtures","Fixtures & results")}${mds.map(d=>`<h3 class="h mut">Matchday ${d}</h3>${L.matches.filter(m=>m.md==d).map((m,i)=>`<div class="fx in" style="--i:${i}"><span>${E(m.h)} ${cr(m.h).replace("margin-right:8px","")}</span><span class="s">${m.hs==null?"vs":m.hs+" – "+m.as}</span><span>${cr(m.a)}${E(m.a)}</span></div>`).join("")}`).join("")||'<p class="mut">No fixtures yet.</p>'}`},
 players(){const S=[["Goals","g"],["Assists","a"],["Shots on target","sot"],["Shots saved","sv"]];
-return`${back}<h2 class="t h">Player stats</h2><div class="pgrid">${S.map(([t,k],i)=>{const r=[...L.players].filter(p=>p[k]>0).sort((x,y)=>y[k]-x[k]).slice(0,5);return`<div class="pan in" style="--i:${i}"><h3 class="h">${t}</h3>${r.map((p,j)=>`<div class="up2"><span>${j+1}. ${p.t?cr(p.t):""}${E(p.n)}</span><b>${p[k]}</b></div>`).join("")||'<span class="mut">No data yet.</span>'}</div>`}).join("")}</div>`},
-teamstats(){const t=table();return`${back}<h2 class="t h">Team stats</h2><div class="pan scroll"><table class="l"><thead><tr><th>CLUB</th><th>PLD</th><th>GF</th><th>GA</th><th>GD</th><th>GF/G</th><th>GA/G</th></tr></thead><tbody>${t.map((r,i)=>`<tr style="--i:${i}"><td>${cr(r.n)}${E(r.n)}</td><td>${r.p}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gf-r.ga}</td><td>${r.p?(r.gf/r.p).toFixed(1):"-"}</td><td>${r.p?(r.ga/r.p).toFixed(1):"-"}</td></tr>`).join("")}</tbody></table>${t.length?"":'<p class="mut">No teams yet.</p>'}</div>`},
-rules(){return`${back}<h2 class="t h">Rules</h2><div class="art"><p>${E(L.rules)||'<span class="mut">No rules published yet.</span>'}</p></div>`},
+return`${back}${H("players","Player stats")}<div class="pgrid">${S.map(([t,k],i)=>{const r=[...L.players].filter(p=>p[k]>0).sort((x,y)=>y[k]-x[k]).slice(0,5);return`<div class="pan in" style="--i:${i}"><h3 class="h">${t}</h3>${r.map((p,j)=>`<div class="up2"><span>${j+1}. ${p.t?cr(p.t):""}${E(p.n)}</span><b>${p[k]}</b></div>`).join("")||'<span class="mut">No data yet.</span>'}</div>`}).join("")}</div>`},
+teamstats(){const t=table();return`${back}${H("teamstats","Team stats")}<div class="pan scroll"><table class="l"><thead><tr><th>CLUB</th><th>PLD</th><th>GF</th><th>GA</th><th>GD</th><th>GF/G</th><th>GA/G</th></tr></thead><tbody>${t.map((r,i)=>`<tr style="--i:${i}"><td>${cr(r.n)}${E(r.n)}</td><td>${r.p}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gf-r.ga}</td><td>${r.p?(r.gf/r.p).toFixed(1):"-"}</td><td>${r.p?(r.ga/r.p).toFixed(1):"-"}</td></tr>`).join("")}</tbody></table>${t.length?"":'<p class="mut">No teams yet.</p>'}</div>`},
+rules(){return`${back}${H("rules","Rules")}<div class="art"><p>${E(L.rules)||'<span class="mut">No rules published yet.</span>'}</p></div>`},
 post(id){const p=P.find(x=>x.id==id);return back+(p?`<article class="art"><h2 class="t h">${E(p.title)}</h2><span class="mut">${new Date(p.ts).toLocaleDateString()}</span>${im(p)}<p>${E(p.body)}</p></article>`:'<p class="mut">Post not found.</p>')},
 admin(){if(!U)return`${back}<div style="max-width:360px"><h2 class="t h">Admin login</h2><div class="r"><input id="em" type="email" placeholder="Email" autocomplete="username"></div><div class="r"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"></div><button class="btn" data-a="in">Log in</button><p class="msg">${E(msg)}</p></div>`;
 const ms=[...new Set(L.matches.map(m=>m.md))];
 return`<div class="adm">${back}<button class="pill" data-a="out">Log out</button><p class="msg">${E(msg)}</p>
 <h3 class="h">Site</h3><div class="r"><input data-s="name" value="${E(L.name)}"><input data-s="season" value="${E(L.season)}"></div>
 <div class="r"><input data-s="note" placeholder="Table note" value="${E(L.note)}"></div><div class="r"><textarea data-s="rules" rows="6" placeholder="Rules page text">${E(L.rules)}</textarea></div>
+<h3 class="h">Page titles and intro text</h3>${[["table","League table"],["fixtures","Fixtures & results"],["players","Player stats"],["teamstats","Team stats"],["rules","Rules"],["apply","Become a moderator"]].map(([k,t])=>`<div class="r"><input data-pg="${k}" placeholder="${t}" value="${E(T(k,""))}"><input data-pg="${k}_i" placeholder="Intro text (optional)" value="${E(T(k+"_i",""))}"></div>`).join("")}
+<div class="r"><input data-pg="cta" placeholder="Home box title" value="${E(T("cta",""))}"><input data-pg="cta_i" placeholder="Home box text" value="${E(T("cta_i",""))}"><input data-pg="cta_b" placeholder="Button text" value="${E(T("cta_b",""))}"></div>
 <h3 class="h">New post</h3><div class="r"><input id="pt" data-dr="t" placeholder="Title" value="${E(D.t)}"></div><div class="r"><textarea id="pb" data-dr="b" rows="5" placeholder="Text">${E(D.b)}</textarea></div><div class="r"><input id="pf" data-pf="1" type="file" accept="image/*"><span id="pfn" class="mut">${D.f?E(D.f.name):""}</span></div><div class="r"><input data-dr="u" placeholder="...or paste an image link (https://...)" value="${E(D.u)}"></div><button class="btn" data-a="post">Publish post</button>
-${P.map(p=>`<div class="r" style="margin-top:8px"><span style="flex:1">${E(p.title)}</span><button class="pill" data-a="delpost" data-id="${p.id}">Delete</button></div>`).join("")}
+<h3 class="h">Edit posts</h3>${P.map(p=>`<div class="pan"><div class="r"><input data-pe="${p.id}" data-k="title" value="${E(p.title)}"><button class="pill" data-a="delpost" data-id="${p.id}">Delete</button></div><div class="r"><textarea rows="3" data-pe="${p.id}" data-k="body">${E(p.body)}</textarea></div><div class="r"><input data-pe="${p.id}" data-k="img" placeholder="Image link (https://...)" value="${/^https:/.test(p.img||"")?E(p.img):""}"></div></div>`).join("")||'<p class="mut">No posts yet.</p>'}
 <h3 class="h">Teams</h3><div class="r"><input id="tn" placeholder="Team name"><button class="btn" data-a="addteam">Add</button></div>
 ${L.teams.map((n,i)=>`<div class="r">${cr(n)}<input data-rn="${i}" value="${E(n)}"><input type="number" title="Extra points" data-ep="${i}" value="${(L.ep||{})[n]||0}"><label class="pill">Logo<input type="file" accept="image/*" data-logo="${i}" hidden></label><button class="pill" data-a="logourl" data-i="${i}">Link</button><button class="pill" data-a="rmteam" data-i="${i}">Remove</button></div>`).join("")}<p class="mut">The number is each team's extra points (EP). Rename a team by editing its name.</p>
 <button class="btn" data-a="gen">Generate fixtures (everyone plays everyone)</button>
 <h3 class="h">Players</h3><div class="r"><input id="pn" placeholder="Player name"><select id="ptm"><option value="">No team</option>${L.teams.map(n=>`<option>${E(n)}</option>`).join("")}</select><button class="btn" data-a="addplayer">Add</button></div>
-${L.players.map((p,i)=>`<div class="r"><span style="flex:1">${E(p.n)} <small class="mut">${E(p.t)}</small></span>${[["g","Goals"],["a","Assists"],["sot","On target"],["sv","Saved"]].map(([k,t])=>`<input type="number" min="0" title="${t}" data-pl="${i}" data-k="${k}" value="${p[k]}">`).join("")}<button class="pill" data-a="rmplayer" data-i="${i}">✕</button></div>`).join("")}<p class="mut">Order of numbers: goals, assists, shots on target, shots saved.</p>
+${L.players.map((p,i)=>`<div class="r"><input data-pn="${i}" value="${E(p.n)}" style="flex:1"><select data-pt="${i}"><option value="">No team</option>${L.teams.map(n=>`<option ${n==p.t?"selected":""}>${E(n)}</option>`).join("")}</select>${[["g","Goals"],["a","Assists"],["sot","On target"],["sv","Saved"]].map(([k,t])=>`<input type="number" min="0" title="${t}" data-pl="${i}" data-k="${k}" value="${p[k]}">`).join("")}<button class="pill" data-a="rmplayer" data-i="${i}">✕</button></div>`).join("")}<p class="mut">Order of numbers: goals, assists, shots on target, shots saved.</p>
 <h3 class="h">Add a match</h3><div class="r"><input id="mmd" type="number" min="1" value="1" title="Matchday"><select id="mh"><option value="">Home team</option>${L.teams.map(n=>`<option>${E(n)}</option>`).join("")}</select><select id="ma"><option value="">Away team</option>${L.teams.map(n=>`<option>${E(n)}</option>`).join("")}</select><button class="btn" data-a="addmatch">Add</button></div>
 <h3 class="h">Results</h3>${ms.map(d=>`<p class="mut">Matchday ${d}</p>${L.matches.map((m,i)=>m.md==d?`<div class="r"><span style="flex:1;text-align:right">${E(m.h)}</span><input type="number" min="0" data-m="${i}" data-k="hs" value="${m.hs??""}"><input type="number" min="0" data-m="${i}" data-k="as" value="${m.as??""}"><span style="flex:1">${E(m.a)}</span><button class="pill" data-a="rmmatch" data-i="${i}" title="Delete match">✕</button></div>`:"").join("")}`).join("")||'<p class="mut">Add teams, then generate fixtures.</p>'}</div>`}};
 function go(){const r=R.split("/"),k=r[0],ap=$("#apply"),a=$("#app");
-ap.hidden=k!="apply";a.hidden=k=="apply";$("#lg").textContent=U?"Admin":"Log in";$("#logo").textContent=L.name;$("#ft").textContent=L.name;document.title=L.name;
+ap.hidden=k!="apply";a.hidden=k=="apply";$("#lg").textContent=U?"Admin":"Log in";$("#logo").textContent=L.name;$("#apt").textContent=T("apply","Become a moderator");$("#api").textContent=T("apply_i","");$("#ft").textContent=L.name;document.title=L.name;
 if(k!="apply")a.innerHTML='<div class="pg">'+(Object.hasOwn(V,k)?V[k](r[1]):V.home())+"</div>"}
 const busy=()=>/INPUT|TEXTAREA/.test(document.activeElement.tagName)&&R=="admin";
 if(db){
@@ -153,9 +157,12 @@ else if(d.rn!=null){const o=L.teams[d.rn],n=e.target.value.trim();if(!n||L.teams
 L.teams[d.rn]=n;L.matches.forEach(m=>{if(m.h==o)m.h=n;if(m.a==o)m.a=n});L.players.forEach(p=>{if(p.t==o)p.t=n});
 if(L.logos[o]){L.logos[n]=L.logos[o];delete L.logos[o]}if(L.ep[o]!=null){L.ep[n]=L.ep[o];delete L.ep[o]}await saveL();go()}});
 let tm;document.addEventListener("input",e=>{const d=e.target.dataset;if(d.dr){D[d.dr]=e.target.value;return}
+if(d.pe){const v=e.target.value,k=d.k,id=d.pe;if(k=="img"&&v&&!/^https:\/\//.test(v))return;clearTimeout(PT[id+k]);PT[id+k]=setTimeout(()=>updateDoc(doc(db,"posts",id),{[k]:v}).catch(fail),700);return}
 if(d.s){L[d.s]=e.target.value}else if(d.m){L.matches[d.m][d.k]=e.target.value===""?null:+e.target.value}
 else if(d.ep!=null){L.ep={...L.ep,[L.teams[d.ep]]:+e.target.value||0}}
-else if(d.pl!=null){L.players[d.pl][d.k]=+e.target.value||0}else return;clearTimeout(tm);tm=setTimeout(saveL,700)});
+else if(d.pl!=null){L.players[d.pl][d.k]=+e.target.value||0}
+else if(d.pn!=null){L.players[d.pn].n=e.target.value}else if(d.pt!=null){L.players[d.pt].t=e.target.value}
+else if(d.pg!=null){L.pg={...L.pg,[d.pg]:e.target.value}}else return;clearTimeout(tm);tm=setTimeout(saveL,700)});
 document.addEventListener("click",async e=>{const l=e.target.closest("a[href^='#']");if(l){e.preventDefault();R=l.getAttribute("href").slice(1);try{location.hash=R}catch(x){}msg="";go();scrollTo(0,0);return}const d=e.target.dataset;if(!d.a)return;
 try{if(d.a=="in"){await signInWithEmailAndPassword(auth,$("#em").value,$("#pw").value);msg=""}
 else if(d.a=="out")await signOut(auth);
